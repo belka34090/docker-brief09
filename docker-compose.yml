@@ -1,0 +1,50 @@
+version: '3.8'
+
+services:
+  # WordPress Service
+  wordpress:
+    image: wordpress:latest
+    ports:
+      - "8080:80"
+    environment:
+      WORDPRESS_DB_HOST: db
+      WORDPRESS_DB_USER: root
+      WORDPRESS_DB_PASSWORD: password123
+      WORDPRESS_DB_NAME: wordpress
+    depends_on:
+      - db
+
+  # MySQL Database Service
+  db:
+    image: mysql:5.7
+    environment:
+      MYSQL_ROOT_PASSWORD: password123
+      MYSQL_DATABASE: wordpress
+
+  # Prometheus Service
+  prometheus:
+    image: prom/prometheus:latest
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml
+
+  # Grafana Service
+  grafana:
+    image: grafana/grafana:latest
+    ports:
+      - "3000:3000"
+    depends_on:
+      - prometheus
+
+  # GLPI Service
+  glpi:
+    image: diouxx/glpi:latest
+    ports:
+      - "8081:80"
+    environment:
+      MYSQL_HOST: db
+      MYSQL_ROOT_PASSWORD: password123
+      MYSQL_DATABASE: glpi
+    depends_on:
+      - db
