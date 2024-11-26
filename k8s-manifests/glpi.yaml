@@ -1,0 +1,33 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: glpi
+  namespace: apps
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: glpi
+  template:
+    metadata:
+      labels:
+        app: glpi
+    spec:
+      containers:
+      - name: glpi
+        image: diouxx/glpi:latest
+        ports:
+        - containerPort: 80 # Ce port est interne au conteneur
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: glpi
+  namespace: apps
+spec:
+  type: LoadBalancer
+  selector:
+    app: glpi
+  ports:
+  - port: 81 # Port exposé au niveau du service
+    targetPort: 80 # Le port interne au conteneur reste inchangé
